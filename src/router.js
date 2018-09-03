@@ -1,5 +1,6 @@
 import $ from 'jquery';
 import Backbone from 'backbone';
+import { Map } from 'immutable';
 
 import AuthView from './views/content/auth';
 import HomeView from './views/content/home';
@@ -10,12 +11,12 @@ import userStore from './stores/user/store';
 
 const CONTENT_SELECTOR = $('#content');
 const NAVBAR_SELECTOR = $('#navbar');
-const ROUTES = {
+const ROUTES = Map({
     '': 'index',
     'login': 'login',
     'logout': 'logout',
     'signup': 'signup',
-};
+});
 
 class Router extends Backbone.Router {
     constructor() {
@@ -26,7 +27,7 @@ class Router extends Backbone.Router {
         // setup navbar
         const navbarView = new NavbarView({ parent: this, el: NAVBAR_SELECTOR });
         navbarView.render();
-        navbarView.listenTo(userStore, 'change', navbarView.render);
+        userStore.addListener(navbarView.render.bind(navbarView));
     }
 
     index() {
@@ -68,8 +69,6 @@ class Router extends Backbone.Router {
 
         CONTENT_SELECTOR.append(view.el);
         view.render();
-        view.listenTo(userStore, 'change', view.render);
-
 
         this.currentView = view;
     }
