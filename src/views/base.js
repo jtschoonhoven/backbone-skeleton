@@ -2,6 +2,9 @@ import Backbone from 'backbone';
 import { render } from 'lit-html';
 
 
+const HOST = new URL(window.location.href).host;
+
+
 class BaseView extends Backbone.View {
     constructor(options) {
         super(options);
@@ -29,6 +32,7 @@ class BaseView extends Backbone.View {
         this.childViews.forEach((view) => {
             view.render();
         });
+        this._handleLinkClicks();
         return this;
     }
 
@@ -40,6 +44,31 @@ class BaseView extends Backbone.View {
             super.remove.call(view);
         });
         super.remove();
+    }
+
+    _handleLinkClicks() {
+        /*
+         * Capture all click events on anchor tags and handle them with the app router.
+         */
+        function handleLinkClick(event) {
+            let linkUrl;
+            // parse href and return a URL instance from link
+            try {
+                linkUrl = new URL(event.currentTarget.href);
+            }
+            // do not attempt to handle link if URL parsing fails
+            catch (error) {
+                return null;
+            }
+            // handle link with backbone for urls on this domain
+            if (linkUrl.host === HOST) {
+                event.preventDefault();
+                Backbone.history.navigate(linkUrl.pathname, { trigger: true });
+            }
+            return null;
+        }
+        this.$('a').off('click');
+        this.$('a').click(handleLinkClick.bind(this));
     }
 }
 

@@ -21,9 +21,14 @@ class UserStore extends Backbone.Model {
 
     reduce(eventType, data, onComplete) {
         switch (eventType) {
+            case ACTION_TYPES.LOGOUT:
+                this.set(DEFAULTS);
+                break;
+            case ACTION_TYPES.LOGIN:
+                this.set({ username: data.username, isLoggedIn: true });
+                break;
             case ACTION_TYPES.SIGNUP:
-                this.set(data);
-                this.set('isLoggedIn', true);
+                this.set({ username: data.username, isLoggedIn: true });
                 break;
         }
         onComplete();

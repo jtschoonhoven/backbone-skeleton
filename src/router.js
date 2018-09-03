@@ -1,10 +1,10 @@
 import $ from 'jquery';
 import Backbone from 'backbone';
 
+import AuthView from './views/content/auth';
 import HomeView from './views/content/home';
-import LoginView from './views/content/login';
-import SignupView from './views/content/signup';
 import NavbarView from './views/navbar/navbar';
+import USER_ACTIONS, { ACTION_TYPES } from './stores/user/actions';
 import userStore from './stores/user/store';
 
 
@@ -13,13 +13,13 @@ const NAVBAR_SELECTOR = $('#navbar');
 const ROUTES = {
     '': 'index',
     'login': 'login',
+    'logout': 'logout',
     'signup': 'signup',
 };
 
 class Router extends Backbone.Router {
     constructor() {
         super({ routes: ROUTES });
-        this.host = new URL(window.location.href).host;
         this.childViews = [];
         this.currentView = undefined;
 
@@ -27,7 +27,6 @@ class Router extends Backbone.Router {
         const navbarView = new NavbarView({ parent: this, el: NAVBAR_SELECTOR });
         navbarView.render();
         navbarView.listenTo(userStore, 'change', navbarView.render);
-        this._handleLinkClicks(navbarView);
     }
 
     index() {
@@ -39,7 +38,13 @@ class Router extends Backbone.Router {
             this.navigate('', { trigger: true });
             return;
         }
-        this._render(LoginView);
+        this._render(AuthView, { title: 'Login', userActionType: ACTION_TYPES.LOGIN });
+    }
+
+    logout() {
+        USER_ACTIONS.LOGOUT(() => {
+            this.navigate('', { trigger: true });
+        });
     }
 
     signup() {
@@ -47,50 +52,30 @@ class Router extends Backbone.Router {
             this.navigate('', { trigger: true });
             return;
         }
-        this._render(SignupView);
+        this._render(AuthView, { title: 'Signup', userActionType: ACTION_TYPES.SIGNUP });
     }
 
-    _render(View) {
+    _render(View, options) {
         /*
          * Inject the given view into the main content div. Remove the old view if exists.
          */
-        const view = new View({ parent: this });
-        CONTENT_SELECTOR.append(view.el);
-        view.render();
-        view.listenTo(userStore, 'change', view.render);
+        const _options = Object.assign({}, options, { parent: this });
+        const view = new View(_options);
 
         if (this.currentView) {
             this.currentView.remove();
         }
 
-        this.currentView = view;
-        this._handleLinkClicks(view);
-    }
+        CONTENT_SELECTOR.append(view.el);
+        view.render();
+        view.listenTo(userStore, 'change', view.render);
 
-    _handleLinkClicks(view) {
-        /*
-         * Capture all click events on anchor tags and handle them with this router.
-         */
-        function handleLinkClick(event) {
-            let linkUrl;
-            // parse href and return a URL instance from link
-            try {
-                linkUrl = new URL(event.currentTarget.href);
-            }
-            // do not attempt to handle link if URL parsing fails
-            catch (error) {
-                return null;
-            }
-            // handle link with backbone for urls on this domain
-            if (linkUrl.host === this.host) {
-                event.preventDefault();
-                this.navigate(linkUrl.pathname, { trigger: true });
-            }
-            return null;
-        }
-        view.$('a').click(handleLinkClick.bind(this));
+
+        this.currentView = view;
     }
 }
 
+const router = new Router();
 
-export default Router;
+
+export default router;
