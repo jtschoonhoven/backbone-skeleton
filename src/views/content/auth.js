@@ -2,8 +2,8 @@ import Backbone from 'backbone';
 import { html } from 'lit-html';
 
 import BaseView from '../base';
-import USER_ACTIONS from '../../stores/user/actions';
-import userStore from '../../stores/user/store';
+import USER_ACTIONS from '../../store/actions/user';
+import store from '../../store/store';
 
 
 const FIELD_USER = {
@@ -41,7 +41,7 @@ class AuthView extends BaseView {
         const password = userData[FIELD_PW.name];
 
         USER_ACTIONS[this.userActionType](username, password);
-        if (userStore.isLoggedIn()) {
+        if (store.isLoggedIn()) {
             Backbone.history.navigate('', { trigger: true });
         }
     }

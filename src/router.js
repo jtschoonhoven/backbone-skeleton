@@ -5,8 +5,8 @@ import { Map } from 'immutable';
 import AuthView from './views/content/auth';
 import HomeView from './views/content/home';
 import NavbarView from './views/navbar/navbar';
-import USER_ACTIONS, { ACTION_TYPES } from './stores/user/actions';
-import userStore from './stores/user/store';
+import USER_ACTIONS, { ACTION_TYPES } from './store/reducers/user';
+import store from './store/store';
 
 
 const CONTENT_SELECTOR = $('#content');
@@ -27,7 +27,7 @@ class Router extends Backbone.Router {
         // setup navbar
         const navbarView = new NavbarView({ parent: this, el: NAVBAR_SELECTOR });
         navbarView.render();
-        userStore.addListener(navbarView.render.bind(navbarView));
+        store.subscribe(navbarView.render.bind(navbarView));
     }
 
     index() {
@@ -35,7 +35,7 @@ class Router extends Backbone.Router {
     }
 
     login() {
-        if (userStore.isLoggedIn()) {
+        if (store.isLoggedIn()) {
             this.navigate('', { trigger: true });
             return;
         }
@@ -49,17 +49,17 @@ class Router extends Backbone.Router {
     }
 
     signup() {
-        if (userStore.isLoggedIn()) {
+        if (store.isLoggedIn()) {
             this.navigate('', { trigger: true });
             return;
         }
         this._render(AuthView, { title: 'Signup', userActionType: ACTION_TYPES.SIGNUP });
     }
 
+    /*
+     * Inject the given view into the main content div. Remove the old view if exists.
+     */
     _render(View, options) {
-        /*
-         * Inject the given view into the main content div. Remove the old view if exists.
-         */
         const _options = Object.assign({}, options, { parent: this });
         const view = new View(_options);
 

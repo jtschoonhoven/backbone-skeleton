@@ -2,7 +2,7 @@ import { html } from 'lit-html';
 
 import BaseView from '../base';
 import NavButtonView from './nav-button';
-import userStore from '../../stores/user/store';
+import store from '../../store/store';
 
 
 const TEXT = {
@@ -22,7 +22,7 @@ class NavbarView extends BaseView {
             </button>
             <div class="collapse navbar-collapse flex-row-reverse" id="navbarSupportedContent">
                 ${
-                    userStore.isLoggedIn()
+                    store.isLoggedIn()
                     ? html`
                         ${new NavButtonView({ parent: this, label: TEXT.logout, href: '/logout' }).template()}`
                     : html`
