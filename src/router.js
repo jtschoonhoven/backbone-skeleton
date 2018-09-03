@@ -20,10 +20,11 @@ class Router extends Backbone.Router {
     constructor() {
         super({ routes: ROUTES });
         this.host = new URL(window.location.href).host;
+        this.childViews = [];
         this.currentView = undefined;
 
         // setup navbar
-        const navbarView = new NavbarView({ el: NAVBAR_SELECTOR });
+        const navbarView = new NavbarView({ parent: this, el: NAVBAR_SELECTOR });
         navbarView.render();
         navbarView.listenTo(userStore, 'change', navbarView.render);
         this._handleLinkClicks(navbarView);
@@ -53,7 +54,7 @@ class Router extends Backbone.Router {
         /*
          * Inject the given view into the main content div. Remove the old view if exists.
          */
-        const view = new View();
+        const view = new View({ parent: this });
         CONTENT_SELECTOR.append(view.el);
         view.render();
         view.listenTo(userStore, 'change', view.render);

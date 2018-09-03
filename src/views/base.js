@@ -7,6 +7,14 @@ class BaseView extends Backbone.View {
         super(options);
         this.childViews = [];
         this.delegateEvents();
+
+        const hasParentView = options.parent instanceof BaseView;
+        const isRootView = options.parent instanceof Backbone.Router;
+
+        if (!hasParentView && !isRootView) {
+            throw new Error('New views must include a reference to their parent view or router.');
+        }
+        options.parent.childViews.push(this);
     }
 
     template() {
@@ -25,6 +33,9 @@ class BaseView extends Backbone.View {
     }
 
     remove() {
+        /*
+         * Remove view, its listeners, and all child views from the DOM.
+         */
         this.childViews.forEach((view) => {
             super.remove.call(view);
         });

@@ -27,7 +27,7 @@ class Dispatcher {
          * Dispatch an event with data payload to all stores.
          * Callback is called when all stores have finished updating.
          */
-        // track which stores have not yet finished updating in this set
+        // track which stores have not yet finished updating in a set
         const storesPendingUpdate = new Set(this.stores);
 
         // send event to each store
