@@ -1,6 +1,8 @@
 import Backbone from 'backbone';
 import { render } from 'lit-html';
 
+import userStore from '../stores/user/store';
+
 
 const HOST = new URL(window.location.href).host;
 
@@ -28,7 +30,9 @@ class BaseView extends Backbone.View {
         /*
          * Render HTML inside the view's element.
          */
+        console.log(this);
         render(this.template(), this.el);
+        this._storeToken = userStore.addListener(this.render.bind(this));
         this.childViews.forEach((view) => {
             view.render();
         });
@@ -40,6 +44,7 @@ class BaseView extends Backbone.View {
         /*
          * Remove view, its listeners, and all child views from the DOM.
          */
+        this._storeToken.remove();
         this.childViews.forEach((view) => {
             super.remove.call(view);
         });

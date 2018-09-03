@@ -1,37 +1,39 @@
-import Backbone from 'backbone';
+import { Record } from 'immutable';
+import { ReduceStore } from 'flux/utils';
 
 import dispatcher from '../../dispatcher';
 import { ACTION_TYPES } from './actions';
 
 
-const DEFAULTS = {
+const UserSchema = new Record({
     username: 'guest',
     isLoggedIn: false,
-};
+});
 
 
-class UserStore extends Backbone.Model {
-    initialize() {
-        dispatcher.register(this, this.reduce);
+class UserStore extends ReduceStore {
+    constructor() {
+        super(dispatcher);
     }
 
-    defaults() {
-        return DEFAULTS;
+    getInitialState() {
+        return new UserSchema();
     }
 
-    reduce(eventType, data, onComplete) {
-        switch (eventType) {
+    reduce(state, action) {
+        switch (action.type) {
             case ACTION_TYPES.LOGOUT:
-                this.set(DEFAULTS);
-                break;
+                return state.clear();
             case ACTION_TYPES.LOGIN:
-                this.set({ username: data.username, isLoggedIn: true });
-                break;
+                return state.merge({ username: action.username, isLoggedIn: true });
             case ACTION_TYPES.SIGNUP:
-                this.set({ username: data.username, isLoggedIn: true });
-                break;
+                return state.merge({ username: action.username, isLoggedIn: true });
         }
-        onComplete();
+        return state;
+    }
+
+    get(key) {
+        return this.getState().get(key);
     }
 
     isLoggedIn() {
@@ -43,7 +45,5 @@ class UserStore extends Backbone.Model {
     }
 }
 
-const userStore = new UserStore();
 
-
-export default userStore;
+export default new UserStore();

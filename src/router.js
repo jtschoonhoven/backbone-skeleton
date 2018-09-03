@@ -26,7 +26,7 @@ class Router extends Backbone.Router {
         // setup navbar
         const navbarView = new NavbarView({ parent: this, el: NAVBAR_SELECTOR });
         navbarView.render();
-        navbarView.listenTo(userStore, 'change', navbarView.render);
+        userStore.addListener(navbarView.render.bind(navbarView));
     }
 
     index() {
@@ -68,8 +68,6 @@ class Router extends Backbone.Router {
 
         CONTENT_SELECTOR.append(view.el);
         view.render();
-        view.listenTo(userStore, 'change', view.render);
-
 
         this.currentView = view;
     }

@@ -40,11 +40,10 @@ class AuthView extends BaseView {
         const username = userData[FIELD_USER.name];
         const password = userData[FIELD_PW.name];
 
-        USER_ACTIONS[this.userActionType](username, password, () => {
-            if (userStore.isLoggedIn()) {
-                Backbone.history.navigate('', { trigger: true });
-            }
-        });
+        USER_ACTIONS[this.userActionType](username, password);
+        if (userStore.isLoggedIn()) {
+            Backbone.history.navigate('', { trigger: true });
+        }
     }
 
     template() {

@@ -8,16 +8,22 @@ const ACTION_TYPES = {
 };
 
 const ACTIONS = {
-    LOGIN: (username, password, callback) => {
-        const data = { username, password };
-        dispatcher.dispatch(ACTION_TYPES.LOGIN, data, callback);
+    LOGIN: (username, password) => {
+        dispatcher.dispatch({
+            type: ACTION_TYPES.LOGIN,
+            username,
+            password,
+        });
     },
-    LOGOUT: (callback) => {
-        dispatcher.dispatch(ACTION_TYPES.LOGOUT, null, callback);
+    LOGOUT: () => {
+        dispatcher.dispatch({ type: ACTION_TYPES.LOGOUT });
     },
-    SIGNUP: (username, password, callback) => {
-        const data = { username, password };
-        dispatcher.dispatch(ACTION_TYPES.SIGNUP, data, callback);
+    SIGNUP: (username, password) => {
+        dispatcher.dispatch({
+            type: ACTION_TYPES.SIGNUP,
+            username,
+            password,
+        });
     },
 };
 
